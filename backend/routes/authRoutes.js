@@ -5,4 +5,4 @@ router.get("/", (req, res) => {
   res.send("Auth route working");
 });
 
-module.exports = router;
+module.exports = route;
