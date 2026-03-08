@@ -1,21 +1,27 @@
 const express = require("express");
 const router = express.Router();
+const User = require("../models/User");
 
-router.get("/", (req, res) => {
-  res.send("Auth route working");
-});
+router.post("/register", async (req, res) => {
+  try {
+    const { name, email, password, role } = req.body;
 
-router.post("/register", (req, res) => {
-  const { name, email, password, role } = req.body;
-
-  res.json({
-    message: "User registered successfully",
-    user: {
+    const user = new User({
       name,
       email,
-      role
-    }
-  });
+      password,
+      role,
+    });
+
+    await user.save();
+
+    res.json({
+      message: "User registered successfully",
+      user,
+    });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 });
 
 module.exports = router;
