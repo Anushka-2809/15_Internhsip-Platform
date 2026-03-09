@@ -1,23 +1,30 @@
-const jwt = require("jsonwebtoken");
-
-const authMiddleware = (req, res, next) => {
+router.post("/login", async (req, res) => {
   try {
+    const { email, password } = req.body;
 
-    const token = req.headers.authorization;
+    const user = await User.findOne({ email });
 
-    if (!token) {
-      return res.status(401).json({ message: "No token provided" });
+    if (!user) {
+      return res.status(400).json({ message: "User not found" });
     }
 
-    const decoded = jwt.verify(token.split(" ")[1], "secretkey");
+    const isMatch = await bcrypt.compare(password, user.password);
 
-    req.user = decoded;
+    if (!isMatch) {
+      return res.status(400).json({ message: "Invalid password" });
+    }
 
-    next();
+    const token = jwt.sign({ id: user._id }, "secretkey", {
+      expiresIn: "1d"
+    });
+
+    res.json({
+      message: "Login successful",
+      token,
+      user
+    });
 
   } catch (error) {
-    res.status(401).json({ message: "Invalid token" });
+    res.status(500).json({ message: error.message });
   }
-};
-
-module.exports = authMiddleware;
+});
