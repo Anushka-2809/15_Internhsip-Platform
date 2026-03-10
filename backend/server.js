@@ -4,6 +4,7 @@ const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
 const userRoutes = require("./routes/userRoutes");
+const internshipRoutes = require("./routes/internshipRoutes");
 
 dotenv.config();
 connectDB();
@@ -14,6 +15,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/internships", internshipRoutes);
 
 app.get("/", (req, res) => {
   res.send("API running...");
