@@ -9,4 +9,4 @@ router.get("/profile", authMiddleware, (req, res) => {
   });
 });
 
-module.exports = route;
+module.exports = router;
