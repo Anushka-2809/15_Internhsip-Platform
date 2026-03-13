@@ -1,13 +1,16 @@
 const express = require("express");
 const router = express.Router();
 
-const applicationController = require("../controllers/applicationController");
+const {
+  applyInternship,
+  getMyApplications,
+  getApplicationsForInternship
+} = require("../controllers/applicationController");
+
 const authMiddleware = require("../middleware/authMiddleware");
 
-// Apply for internship
-router.post("/apply", authMiddleware, applicationController.applyInternship);
-
-// Get my applications
-router.get("/my", authMiddleware, applicationController.getMyApplications);
+router.post("/apply", authMiddleware, applyInternship);
+router.get("/my", authMiddleware, getMyApplications);
+router.get("/internship/:id", authMiddleware, getApplicationsForInternship);
 
 module.exports = router;
