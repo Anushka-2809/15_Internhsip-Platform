@@ -1,5 +1,6 @@
+require("dotenv").config();
+
 const express = require("express");
-const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 
 const authRoutes = require("./routes/authRoutes");
@@ -7,10 +8,9 @@ const userRoutes = require("./routes/userRoutes");
 const internshipRoutes = require("./routes/internshipRoutes");
 const applicationRoutes = require("./routes/applicationRoutes");
 
-dotenv.config();
-connectDB();
-
 const app = express();
+
+connectDB();
 
 app.use(express.json());
 
