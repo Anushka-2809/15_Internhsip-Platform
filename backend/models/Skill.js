@@ -1,11 +1,31 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const SkillSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // skill name, e.g., "React", "Python"
-  type: { type: String, enum: ["student", "internship"], required: true }, // whether this skill is linked to a student or an internship
-  user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: function() { return this.type === "student"; } }, // optional link to student
-  internship: { type: mongoose.Schema.Types.ObjectId, ref: "Internship", required: function() { return this.type === "internship"; } }, // optional link to internship
-  createdAt: { type: Date, default: Date.now }
-});
+const skillSchema = new mongoose.Schema(
+  {
+    name: {
+      type: String,
+      required: true,
+      unique: true,
+      trim: true
+    },
+    category: {
+      type: String, // e.g. "Frontend", "Backend", "Database"
+      default: "General"
+    },
+    description: {
+      type: String,
+      default: ""
+    },
+    isActive: {
+      type: Boolean,
+      default: true
+    }
+  },
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Skill", SkillSchema);
+// 🔥 Indexes
+skillSchema.index({ name: 1 });
+skillSchema.index({ category: 1 });
+
+export default mongoose.model("Skill", skillSchema);

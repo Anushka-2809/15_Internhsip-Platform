@@ -1,19 +1,36 @@
-const mongoose = require("mongoose");
+import mongoose from "mongoose";
 
-const resumeSchema = new mongoose.Schema({
-  user: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "User",
-    required: true
+const resumeSchema = new mongoose.Schema(
+  {
+    student: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      required: true
+    },
+    resumeUrl: {
+      type: String, // Cloudinary URL
+      required: true
+    },
+    fileName: {
+      type: String
+    },
+    fileType: {
+      type: String, // pdf, doc, docx
+      default: "pdf"
+    },
+    fileSize: {
+      type: Number // in KB/MB (optional)
+    },
+    isDefault: {
+      type: Boolean,
+      default: true
+    }
   },
-  fileUrl: {
-    type: String,
-    required: true
-  },
-  uploadedAt: {
-    type: Date,
-    default: Date.now
-  }
-});
+  { timestamps: true }
+);
 
-module.exports = mongoose.model("Resume", resumeSchema);
+// 🔥 Indexes
+resumeSchema.index({ student: 1 });
+resumeSchema.index({ student: 1, isDefault: 1 });
+
+export default mongoose.model("Resume", resumeSchema);
