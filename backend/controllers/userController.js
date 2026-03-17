@@ -1,30 +1,24 @@
-const User = require("../models/User");
-const Resume = require("../models/Resume");
+import User from "../models/User.js";
+import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
 
-// Get logged-in user profile
-exports.getMyProfile = async (req, res) => {
-  try {
-    const user = await User.findById(req.user.id).select("-password"); // exclude password
-    res.json(user);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+// 👤 GET PROFILE
+export const getProfile = asyncHandler(async (req, res) => {
+  const user = await User.findById(req.user.id)
+    .populate("skills")
+    .populate("resumes");
 
-// Update logged-in user profile
-exports.updateMyProfile = async (req, res) => {
-  try {
-    const { name, email } = req.body;
-    const user = await User.findById(req.user.id);
+  if (!user) throw new ApiError(404, "User not found");
 
-    if (!user) return res.status(404).json({ message: "User not found" });
+  res.json(new ApiResponse(200, user, "Profile fetched"));
+});
 
-    user.name = name || user.name;
-    user.email = email || user.email;
+// ✏️ UPDATE PROFILE
+export const updateProfile = asyncHandler(async (req, res) => {
+  const user = await User.findByIdAndUpdate(
+    req.user.id,
+    req.body,
+    { new: true }
+  );
 
-    await user.save();
-    res.json({ message: "Profile updated", user });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+  res.json(new ApiResponse(200, user, "Profile updated"));
+});

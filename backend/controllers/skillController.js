@@ -1,49 +1,16 @@
-const Skill = require("../models/Skill");
+import Skill from "../models/Skill.js";
+import { ApiResponse, asyncHandler } from "../utils/helpers.js";
 
-// Add a new skill (for student or internship)
-exports.addSkill = async (req, res) => {
-  try {
-    const { name, type, userId, internshipId } = req.body;
+// ➕ CREATE
+export const createSkill = asyncHandler(async (req, res) => {
+  const skill = await Skill.create(req.body);
 
-    if (!name || !type || (type === "student" && !userId) || (type === "internship" && !internshipId)) {
-      return res.status(400).json({ message: "Missing required fields" });
-    }
+  res.status(201).json(new ApiResponse(201, skill, "Created"));
+});
 
-    const skill = new Skill({
-      name,
-      type,
-      user: type === "student" ? userId : undefined,
-      internship: type === "internship" ? internshipId : undefined
-    });
+// 📋 GET ALL
+export const getSkills = asyncHandler(async (req, res) => {
+  const skills = await Skill.find();
 
-    await skill.save();
-    res.json({ message: "Skill added successfully", skill });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Get skills for a user or internship
-exports.getSkills = async (req, res) => {
-  try {
-    const { type, id } = req.params; // type: student/internship, id: userId or internshipId
-    const filter = type === "student" ? { user: id } : { internship: id };
-    const skills = await Skill.find(filter);
-    res.json(skills);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
-
-// Delete a skill by ID
-exports.deleteSkill = async (req, res) => {
-  try {
-    const skill = await Skill.findById(req.params.id);
-    if (!skill) return res.status(404).json({ message: "Skill not found" });
-
-    await skill.deleteOne();
-    res.json({ message: "Skill deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+  res.json(new ApiResponse(200, skills, "Fetched"));
+});

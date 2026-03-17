@@ -1,23 +1,43 @@
-exports.createInternship = async (req, res) => {
-  try {
-    const { title, company, location, description, stipend } = req.body;
+import Internship from "../models/Internship.js";
+import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
 
-    const internship = new Internship({
-      title,
-      company,
-      location,
-      description,
-      stipend
-    });
+// 🧑‍💼 CREATE
+export const createInternship = asyncHandler(async (req, res) => {
+  const internship = await Internship.create({
+    ...req.body,
+    company: req.user.id
+  });
 
-    await internship.save();
+  res.status(201).json(new ApiResponse(201, internship, "Created"));
+});
 
-    res.status(201).json({
-      message: "Internship created successfully",
-      internship
-    });
+// 📋 GET ALL
+export const getInternships = asyncHandler(async (req, res) => {
+  const internships = await Internship.find().sort({ createdAt: -1 });
 
-  } catch (error) {
-    res.status(500).json({ message: error.message });
+  res.json(new ApiResponse(200, internships, "Fetched"));
+});
+
+// 🔍 GET ONE
+export const getInternshipById = asyncHandler(async (req, res) => {
+  const internship = await Internship.findById(req.params.id);
+
+  if (!internship) throw new ApiError(404, "Not found");
+
+  res.json(new ApiResponse(200, internship, "Fetched"));
+});
+
+// ❌ DELETE
+export const deleteInternship = asyncHandler(async (req, res) => {
+  const internship = await Internship.findById(req.params.id);
+
+  if (!internship) throw new ApiError(404, "Not found");
+
+  if (internship.company.toString() !== req.user.id) {
+    throw new ApiError(403, "Not authorized");
   }
-};
+
+  await internship.deleteOne();
+
+  res.json(new ApiResponse(200, null, "Deleted"));
+});

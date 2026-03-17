@@ -1,28 +1,22 @@
-const Resume = require("../models/Resume");
+import Resume from "../models/Resume.js";
+import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
 
-// Upload resume (user)
-exports.uploadResume = async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).json({ message: "No file uploaded" });
+// 📄 UPLOAD
+export const uploadResume = asyncHandler(async (req, res) => {
+  if (!req.file) throw new ApiError(400, "No file uploaded");
 
-    const resume = new Resume({
-      user: req.user.id,
-      fileUrl: req.file.path
-    });
+  const resume = await Resume.create({
+    student: req.user.id,
+    resumeUrl: req.file.path,
+    fileName: req.file.originalname
+  });
 
-    await resume.save();
-    res.json({ message: "Resume uploaded successfully", resume });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+  res.status(201).json(new ApiResponse(201, resume, "Uploaded"));
+});
 
-// Get logged-in user's resumes
-exports.getMyResume = async (req, res) => {
-  try {
-    const resumes = await Resume.find({ user: req.user.id });
-    res.json(resumes);
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-};
+// 📋 GET ALL
+export const getMyResumes = asyncHandler(async (req, res) => {
+  const resumes = await Resume.find({ student: req.user.id });
+
+  res.json(new ApiResponse(200, resumes, "Fetched"));
+});
