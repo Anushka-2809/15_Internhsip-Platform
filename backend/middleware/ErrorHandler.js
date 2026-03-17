@@ -1,43 +1,56 @@
-export class ApiError extends Error {
-  constructor(statusCode, message, errors = []) {
-    super(message);
-    this.statusCode = statusCode;
-    this.errors = errors;
-    this.success = false;
+import { ApiError, ApiResponse } from "../utils/helpers.js";
 
-    Error.captureStackTrace(this, this.constructor);
-  }
-}
-
-// 🔥 Global Error Middleware
 export const errorHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || "Internal Server Error";
+  console.error(err);
 
-  // Mongoose bad ObjectId
-  if (err.name === "CastError") {
-    statusCode = 400;
-    message = "Invalid ID format";
-  }
-
-  // Duplicate key error
-  if (err.code === 11000) {
-    statusCode = 400;
-    message = `Duplicate field value entered`;
-  }
-
-  // Validation error
+  // Mongoose validation error
   if (err.name === "ValidationError") {
-    statusCode = 400;
-    message = Object.values(err.errors)
-      .map((val) => val.message)
+    const messages = Object.values(err.errors)
+      .map((e) => e.message)
       .join(", ");
+    return res
+      .status(400)
+      .json(new ApiResponse(400, null, messages));
   }
 
-  res.status(statusCode).json({
-    success: false,
-    message,
-    errors: err.errors || [],
-    stack: process.env.NODE_ENV === "development" ? err.stack : undefined
-  });
+  // Mongoose duplicate key error
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyPattern)[0];
+    return res
+      .status(400)
+      .json(new ApiResponse(400, null, `${field} already exists`));
+  }
+
+  // JWT errors
+  if (err.name === "JsonWebTokenError") {
+    return res
+      .status(401)
+      .json(new ApiResponse(401, null, "Invalid token"));
+  }
+
+  if (err.name === "TokenExpiredError") {
+    return res
+      .status(401)
+      .json(new ApiResponse(401, null, "Token expired"));
+  }
+
+  // Custom API errors
+  if (err instanceof ApiError) {
+    return res
+      .status(err.statusCode)
+      .json(new ApiResponse(err.statusCode, null, err.message));
+  }
+
+  // Default error
+  res
+    .status(err.statusCode || 500)
+    .json(
+      new ApiResponse(
+        err.statusCode || 500,
+        null,
+        err.message || "Internal server error"
+      )
+    );
 };
+
+export default errorHandler;
