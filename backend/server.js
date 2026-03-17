@@ -4,7 +4,7 @@ import cors from "cors";
 import "express-async-errors";
 
 import connectDB from "./config/database.js";
-import { errorHandler } from "./middlewares/errorHandler.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
 // ✅ Routes (updated for your structure)
 import authRoutes from "./routes/authRoutes.js";
