@@ -1,15 +1,17 @@
-const express = require("express");
+import express from "express";
+import {
+  createSkill,
+  getSkills
+} from "../controllers/skillController.js";
+
+import { authMiddleware, recruiterRole } from "../middlewares/auth.js";
+
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
-const { addSkill, getSkills, deleteSkill } = require("../controllers/skillController");
 
-// Add a skill
-router.post("/add", authMiddleware, addSkill);
+// Get all skills (public)
+router.get("/", getSkills);
 
-// Get skills for a student or internship
-router.get("/:type/:id", authMiddleware, getSkills);
+// Create skill (optional: restrict to recruiter/admin)
+router.post("/", authMiddleware, recruiterRole, createSkill);
 
-// Delete a skill
-router.delete("/:id", authMiddleware, deleteSkill);
-
-module.exports = router;
+export default router;

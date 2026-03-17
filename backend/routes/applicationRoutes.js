@@ -1,13 +1,23 @@
-const express = require("express");
+import express from "express";
+import {
+  registerStudentController,
+  loginStudentController,
+  registerRecruiterController,
+  loginRecruiterController,
+  logoutController
+} from "../controllers/authController.js";
+
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
 
-const {
-  applyInternship,
-  getMyApplications,
-} = require("../controllers/applicationController");
+// Student Routes
+router.post("/student/register", registerStudentController);
+router.post("/student/login", loginStudentController);
 
-router.post("/apply/:internshipId", authMiddleware, applyInternship);
-router.get("/my", authMiddleware, getMyApplications);
+// Recruiter Routes
+router.post("/recruiter/register", registerRecruiterController);
+router.post("/recruiter/login", loginRecruiterController);
 
-module.exports = router;
+// Logout
+router.post("/logout", logoutController);
+
+export default router;

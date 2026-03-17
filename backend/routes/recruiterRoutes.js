@@ -1,12 +1,10 @@
-const express = require("express");
+import express from "express";
+import { getMyInternships } from "../controllers/recruiterController.js";
+import { authMiddleware, recruiterRole } from "../middlewares/auth.js";
+
 const router = express.Router();
-const authMiddleware = require("../middleware/authMiddleware");
-const { getApplicantResume, getApplicationsForRecruiter } = require("../controllers/recruiterController");
 
-// Get all applications for recruiter
-router.get("/applications", authMiddleware, getApplicationsForRecruiter);
+// Get all internships posted by recruiter
+router.get("/internships", authMiddleware, recruiterRole, getMyInternships);
 
-// Get resumes of a student by userId
-router.get("/resume/:userId", authMiddleware, getApplicantResume);
-
-module.exports = router;
+export default router;
