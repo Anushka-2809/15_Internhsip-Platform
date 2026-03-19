@@ -45,7 +45,7 @@ export const errorHandler = (err, req, res, next) => {
   res
     .status(err.statusCode || 500)
     .json(
-      new piResponse(
+      new ApiResponse(
         err.statusCode || 500,
         null,
         err.message || "Internal server error"
