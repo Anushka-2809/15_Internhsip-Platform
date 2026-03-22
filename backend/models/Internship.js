@@ -63,7 +63,7 @@ const internshipSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔥 Indexes for performance
+//  Indexes for performance
 internshipSchema.index({ company: 1 });
 internshipSchema.index({ title: "text", description: "text" });
 

@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
 import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
 
-//  GENERATE TOKEN
+// GENERATE TOKEN
 const generateToken = (user) => {
   return jwt.sign(
     { id: user._id, role: user.role },
@@ -33,7 +33,7 @@ export const register = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, { user, token }, "Registered"));
 });
 
-//  LOGIN
+// LOGIN
 export const login = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 

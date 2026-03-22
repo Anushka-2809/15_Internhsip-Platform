@@ -51,7 +51,7 @@ export const recruiterRole = (req, res, next) => {
 
 
 
-// 🔥 OPTIONAL: ADMIN (future use)
+//  OPTIONAL: ADMIN (future use)
 export const adminRole = (req, res, next) => {
   if (req.user.role !== "admin") {
     return next(new ApiError(403, "Only admins can access this route"));

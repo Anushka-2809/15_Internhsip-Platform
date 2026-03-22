@@ -1,7 +1,7 @@
 import multer from "multer";
 import path from "path";
 
-// 🔥 Storage config (temporary local storage)
+// Storage config (temporary local storage)
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/"); // make sure folder exists
@@ -13,7 +13,7 @@ const storage = multer.diskStorage({
   }
 });
 
-// 🔥 File filter (only allow specific files)
+// File filter (only allow specific files)
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["application/pdf"];
 
@@ -24,7 +24,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// 🔥 Upload middleware
+// Upload middleware
 export const upload = multer({
   storage,
   limits: {

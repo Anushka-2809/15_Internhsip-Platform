@@ -62,7 +62,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔥 Indexes
+//  Indexes
 userSchema.index({ email: 1 });
 userSchema.index({ role: 1 });
 

@@ -47,7 +47,7 @@ const recruiterSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔥 Indexes
+//  Indexes
 recruiterSchema.index({ email: 1 });
 recruiterSchema.index({ companyName: "text" });
 

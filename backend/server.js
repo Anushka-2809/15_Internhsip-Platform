@@ -21,7 +21,7 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 
-// 🔥 CORS Configuration
+//  CORS Configuration
 const corsOptions = {
   origin: process.env.CORS_ORIGIN
     ? process.env.CORS_ORIGIN.split(",").map(o => o.trim())
@@ -68,7 +68,7 @@ app.use((req, res) => {
 app.use(errorHandler);
 
 
-// 🔥 START SERVER
+//  START SERVER
 const startServer = async () => {
   try {
     await connectDB();

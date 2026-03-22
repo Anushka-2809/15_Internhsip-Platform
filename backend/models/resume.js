@@ -29,7 +29,7 @@ const resumeSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// 🔥 Indexes
+//  Indexes
 resumeSchema.index({ student: 1 });
 resumeSchema.index({ student: 1, isDefault: 1 });
 
