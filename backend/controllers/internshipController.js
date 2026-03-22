@@ -1,7 +1,7 @@
 import Internship from "../models/Internship.js";
 import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
 
-// 🧑‍💼 CREATE
+//  CREATE
 export const createInternship = asyncHandler(async (req, res) => {
   const internship = await Internship.create({
     ...req.body,
@@ -11,14 +11,14 @@ export const createInternship = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, internship, "Created"));
 });
 
-// 📋 GET ALL
+//  GET ALL
 export const getInternships = asyncHandler(async (req, res) => {
   const internships = await Internship.find().sort({ createdAt: -1 });
 
   res.json(new ApiResponse(200, internships, "Fetched"));
 });
 
-// 🔍 GET ONE
+//  GET ONE
 export const getInternshipById = asyncHandler(async (req, res) => {
   const internship = await Internship.findById(req.params.id);
 
@@ -27,7 +27,7 @@ export const getInternshipById = asyncHandler(async (req, res) => {
   res.json(new ApiResponse(200, internship, "Fetched"));
 });
 
-// ❌ DELETE
+//  DELETE
 export const deleteInternship = asyncHandler(async (req, res) => {
   const internship = await Internship.findById(req.params.id);
 

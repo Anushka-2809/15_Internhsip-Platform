@@ -53,7 +53,7 @@ export const getMyApplications = asyncHandler(async (req, res) => {
 });
 
 
-// 🧑‍💼 GET APPLICATIONS FOR A RECRUITER
+//  GET APPLICATIONS FOR A RECRUITER
 export const getApplicationsForInternship = asyncHandler(async (req, res) => {
   const { internshipId } = req.params;
 
@@ -80,7 +80,7 @@ export const getApplicationsForInternship = asyncHandler(async (req, res) => {
 });
 
 
-// 🧑‍💼 UPDATE APPLICATION STATUS
+//  UPDATE APPLICATION STATUS
 export const updateApplicationStatus = asyncHandler(async (req, res) => {
   const { applicationId } = req.params;
   const { status } = req.body;

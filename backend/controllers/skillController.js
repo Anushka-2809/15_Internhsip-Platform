@@ -8,7 +8,7 @@ export const createSkill = asyncHandler(async (req, res) => {
   res.status(201).json(new ApiResponse(201, skill, "Created"));
 });
 
-// 📋 GET ALL
+//  GET ALL
 export const getSkills = asyncHandler(async (req, res) => {
   const skills = await Skill.find();
 

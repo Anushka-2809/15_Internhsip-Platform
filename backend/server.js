@@ -80,7 +80,7 @@ const startServer = async () => {
     });
 
   } catch (error) {
-    console.error("❌ Server start failed:", error.message);
+    console.error(" Server start failed:", error.message);
     process.exit(1);
   }
 };

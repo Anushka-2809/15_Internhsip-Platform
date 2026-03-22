@@ -41,7 +41,7 @@ export const studentRole = (req, res, next) => {
 
 
 
-// 🧑‍💼 RECRUITER ONLY
+//  RECRUITER ONLY
 export const recruiterRole = (req, res, next) => {
   if (req.user.role !== "recruiter") {
     return next(new ApiError(403, "Only recruiters can access this route"));
