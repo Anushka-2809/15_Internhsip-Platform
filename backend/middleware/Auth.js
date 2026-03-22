@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import { ApiError } from "../utils/helpers.js";
 
-// 🔐 AUTH MIDDLEWARE (verify token)
+//  AUTH MIDDLEWARE (verify token)
 export const authMiddleware = (req, res, next) => {
   try {
     const authHeader = req.headers.authorization;
@@ -31,7 +31,7 @@ export const authMiddleware = (req, res, next) => {
 
 
 
-// 🎓 STUDENT ONLY
+//  STUDENT ONLY
 export const studentRole = (req, res, next) => {
   if (req.user.role !== "student") {
     return next(new ApiError(403, "Only students can access this route"));

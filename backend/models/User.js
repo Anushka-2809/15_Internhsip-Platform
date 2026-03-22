@@ -31,7 +31,7 @@ const userSchema = new mongoose.Schema(
       default: null
     },
 
-    // 🎓 Student-specific
+    //  Student-specific
     skills: [
       {
         type: mongoose.Schema.Types.ObjectId,

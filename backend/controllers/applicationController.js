@@ -3,7 +3,7 @@ import Internship from "../models/Internship.js";
 import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
 
 
-// 🎓 APPLY FOR INTERNSHIP
+// APPLY FOR INTERNSHIP
 export const applyForInternship = asyncHandler(async (req, res) => {
   const { internshipId } = req.params;
 
@@ -39,7 +39,7 @@ export const applyForInternship = asyncHandler(async (req, res) => {
 });
 
 
-// 🎓 GET STUDENT APPLICATIONS
+//  GET STUDENT APPLICATIONS
 export const getMyApplications = asyncHandler(async (req, res) => {
   const applications = await Application.find({
     student: req.user.id
