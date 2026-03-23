@@ -42,7 +42,7 @@ export const applyForInternship = asyncHandler(async (req, res) => {
 //  GET STUDENT APPLICATIONS
 export const getMyApplications = asyncHandler(async (req, res) => {
   const applications = await Application.find({
-    student: req.user.identi
+    student: req.user.id
   })
     .populate("internship", "title companyName location stipend")
     .sort({ createdAt: -1 });
