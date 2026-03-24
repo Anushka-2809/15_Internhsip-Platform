@@ -1,112 +1,120 @@
 import Application from "../models/Application.js";
-import Internship from "../models/Internship.js";
-import { ApiResponse, ApiError, asyncHandler } from "../utils/helpers.js";
+import Job from "../models/Job.js";
+import { ApiResponse, ApiError } from "../utils/helpers.js";
+import { asyncHandler } from "../utils/helpers.js";
 
-
-// APPLY FOR INTERNSHIP
-export const applyForInternship = asyncHandler(async (req, res) => {
-  const { internshipId } = req.params;
-
-  // resume from body or uploaded file
+export const applyForJobController = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
   const resumeUrl = req.body.resumeUrl || req.file?.path;
 
-  // Check internship exists
-  const internship = await Internship.findById(internshipId);
-  if (!internship) {
-    throw new ApiError(404, "Internship not found");
+  // Check if job exists
+  const job = await Job.findById(jobId);
+  if (!job) {
+    throw new ApiError(404, "Job not found");
   }
 
-  // Check duplicate application
+  // Check if already applied
   const existingApplication = await Application.findOne({
     student: req.user.id,
-    internship: internshipId
+    job: jobId
   });
 
   if (existingApplication) {
-    throw new ApiError(400, "You have already applied");
+    throw new ApiError(400, "You have already applied for this job");
   }
 
   // Create application
   const application = await Application.create({
     student: req.user.id,
-    internship: internshipId,
+    job: jobId,
     resumeUrl
   });
 
+  // Update job applications count
+  job.applicationsCount += 1;
+  await job.save();
+
   res.status(201).json(
-    new ApiResponse(201, application, "Applied successfully")
+    new ApiResponse(201, application, "Application submitted successfully")
   );
 });
 
+export const getStudentApplicationsController = asyncHandler(async (req, res) => {
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
 
-//  GET STUDENT APPLICATIONS
-export const getMyApplications = asyncHandler(async (req, res) => {
-  const applications = await Application.find({
-    student: req.user.id
-  })
-    .populate("internship", "title companyName location stipend")
-    .sort({ createdAt: -1 });
+  const applications = await Application.find({ student: req.user.id })
+    .populate("job", "title companyName location stipend")
+    .skip(skip)
+    .limit(limit)
+    .sort({ appliedAt: -1 });
+
+  const total = await Application.countDocuments({ student: req.user.id });
 
   res.json(
-    new ApiResponse(200, applications, "Applications fetched")
+    new ApiResponse(200, { applications, total, pages: Math.ceil(total / limit), currentPage: page }, "Applications retrieved successfully")
   );
 });
 
+export const getRecruiterApplicationsController = asyncHandler(async (req, res) => {
+  const { jobId } = req.params;
+  const { page = 1, limit = 10 } = req.query;
+  const skip = (page - 1) * limit;
 
-//  GET APPLICATIONS FOR A RECRUITER
-export const getApplicationsForInternship = asyncHandler(async (req, res) => {
-  const { internshipId } = req.params;
-
-  const internship = await Internship.findById(internshipId);
-
-  if (!internship) {
-    throw new ApiError(404, "Internship not found");
+  // Verify job belongs to recruiter
+  const job = await Job.findById(jobId);
+  if (!job) {
+    throw new ApiError(404, "Job not found");
   }
 
-  // Check recruiter owns this internship
-  if (internship.company.toString() !== req.user.id) {
-    throw new ApiError(403, "Not authorized");
+  if (job.recruiter.toString() !== req.user.id) {
+    throw new ApiError(403, "Not authorized to view applications for this job");
   }
 
-  const applications = await Application.find({
-    internship: internshipId
-  })
-    .populate("student", "name email phone skills")
-    .sort({ createdAt: -1 });
+  const applications = await Application.find({ job: jobId })
+    .populate("student", "name email skills phone")
+    .skip(skip)
+    .limit(limit)
+    .sort({ appliedAt: -1 });
+
+  const total = await Application.countDocuments({ job: jobId });
 
   res.json(
-    new ApiResponse(200, applications, "Applications fetched")
+    new ApiResponse(200, { applications, total, pages: Math.ceil(total / limit), currentPage: page }, "Applications retrieved successfully")
   );
 });
 
-
-//  UPDATE APPLICATION STATUS
-export const updateApplicationStatus = asyncHandler(async (req, res) => {
-  const { applicationId } = req.params;
+export const updateApplicationStatusController = asyncHandler(async (req, res) => {
+  const { id } = req.params;
   const { status } = req.body;
 
-  const validStatus = ["applied", "shortlisted", "rejected", "accepted"];
-
-  if (!validStatus.includes(status)) {
-    throw new ApiError(400, "Invalid status");
+  if (!["applied", "shortlisted", "rejected", "accepted"].includes(status)) {
+    return res.status(400).json(
+      new ApiResponse(400, null, "Invalid status")
+    );
   }
 
-  const application = await Application.findById(applicationId)
-    .populate("internship");
+  const application = await Application.findById(id).populate("job");
 
   if (!application) {
     throw new ApiError(404, "Application not found");
   }
 
-  // Check recruiter ownership
-  if (application.internship.company.toString() !== req.user.id) {
-    throw new ApiError(403, "Not authorized");
+  if (application.job.recruiter.toString() !== req.user.id) {
+    throw new ApiError(403, "Not authorized to update this application");
   }
 
   application.status = status;
   await application.save();
 
   res.json(
-    new ApiResponse(200, application, "Status updated successfully")
+    new ApiResponse(200, application, "Application status updated successfully")
   );
 });
+
+export default {
+  applyForJobController,
+  getStudentApplicationsController,
+  getRecruiterApplicationsController,
+  updateApplicationStatusController
+};

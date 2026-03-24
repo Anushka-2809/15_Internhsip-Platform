@@ -1,23 +1,24 @@
 import express from "express";
+import { authMiddleware, studentRole, recruiterRole } from "../middlewares/auth.js";
 import {
-  registerStudentController,
-  loginStudentController,
-  registerRecruiterController,
-  loginRecruiterController,
-  logoutController
-} from "../controllers/authController.js";
+  applyForJobController,
+  getStudentApplicationsController,
+  getRecruiterApplicationsController,
+  updateApplicationStatusController
+} from "../controllers/ApplicationController.js";
 
 const router = express.Router();
 
-// Student Routes
-router.post("/student/register", registerStudentController);
-router.post("/student/login", loginStudentController);
+// Student applies for a job
+router.post("/apply/:jobId", authMiddleware, studentRole, applyForJobController);
 
-// Recruiter Routes
-router.post("/recruiter/register", registerRecruiterController);
-router.post("/recruiter/login", loginRecruiterController);
+// Get student's applications
+router.get("/student", authMiddleware, studentRole, getStudentApplicationsController);
 
-// Logout
-router.post("/logout", logoutController);
+// Get applications for a specific job (recruiter)
+router.get("/recruiter/:jobId", authMiddleware, recruiterRole, getRecruiterApplicationsController);
+
+// Update application status (recruiter)
+router.put("/status/:id", authMiddleware, recruiterRole, updateApplicationStatusController);
 
 export default router;

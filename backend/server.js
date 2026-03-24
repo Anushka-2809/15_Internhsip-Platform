@@ -2,60 +2,57 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import "express-async-errors";
-
 import connectDB from "./config/database.js";
-import errorHandler from "./middlewares/ErrorHandler.js";
+import errorHandler from "./middlewares/errorHandler.js";
 
-// ✅ Routes (updated for your structure)
-import authRoutes from "./routes/authRoutes.js";
-import userRoutes from "./routes/userRoutes.js";
-import internshipRoutes from "./routes/internshipRoutes.js";
-import applicationRoutes from "./routes/applicationRoutes.js";
+// Import routes
+import authRoutes from "./routes/AuthRoutes.js";
+import studentRoutes from "./routes/studentRoutes.js";
 import recruiterRoutes from "./routes/recruiterRoutes.js";
-import resumeRoutes from "./routes/resumeRoutes.js";
-import skillRoutes from "./routes/skillRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+import applicationRoutes from "./routes/applicationRoutes.js";
 
 dotenv.config();
 
-const app = express();
 const PORT = process.env.PORT || 5000;
+const app = express();
 
-
-//  CORS Configuration
+// CORS Configuration - Allow multiple local development ports
 const corsOptions = {
-  origin: process.env.CORS_ORIGIN
-    ? process.env.CORS_ORIGIN.split(",").map(o => o.trim())
-    : "*",
+  origin: (origin, callback) => {
+    const allowedOrigins = process.env.CORS_ORIGIN 
+      ? process.env.CORS_ORIGIN.split(',').map(o => o.trim())
+      : ["*"];
+    
+    if (!origin || allowedOrigins.includes(origin) || allowedOrigins.includes("*")) {
+      callback(null, true);
+    } else {
+      callback(new Error("CORS not allowed"));
+    }
+  },
   credentials: true,
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
-
-// 🔹 MIDDLEWARES
+// Middleware
 app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-
-// 🔹 ROUTES
+// Routes
 app.use("/api/auth", authRoutes);
-app.use("/api/users", userRoutes);
-app.use("/api/internships", internshipRoutes);
-app.use("/api/applications", applicationRoutes);
+app.use("/api/student", studentRoutes);
 app.use("/api/recruiter", recruiterRoutes);
-app.use("/api/resumes", resumeRoutes);
-app.use("/api/skills", skillRoutes);
+app.use("/api/jobs", jobRoutes);
+app.use("/api/applications", applicationRoutes);
 
-
-// 🔹 HEALTH CHECK
+// Health check
 app.get("/api/health", (req, res) => {
-  res.json({
-    success: true,
-    message: "Server is running 🚀"
-  });
+  res.json({ message: "Server is running", status: "ok" });
 });
 
-
-// 🔹 404 HANDLER
+// 404 handler
 app.use((req, res) => {
   res.status(404).json({
     success: false,
@@ -63,24 +60,24 @@ app.use((req, res) => {
   });
 });
 
-
-// 🔹 ERROR HANDLER (IMPORTANT: LAST)
+// Error handling middleware
 app.use(errorHandler);
 
-
-//  START SERVER
+// Start server
 const startServer = async () => {
   try {
+    // Connect to MongoDB first
     await connectDB();
-
+    
+    // Then start the server
     app.listen(PORT, () => {
-      console.log(`\n🚀 Server running on port ${PORT}`);
-      console.log(`🌍 Mode: ${process.env.NODE_ENV || "development"}`);
-      console.log(`🔗 API: http://localhost:${PORT}/api\n`);
+      console.log(`\n🚀 Server is running on port ${PORT}`);
+      console.log(`📝 Environment: ${process.env.NODE_ENV || "development"}`);
+      console.log(`🌍 CORS Origin: ${process.env.CORS_ORIGIN || "*"}`);
+      console.log(`\n✅ API Ready: http://localhost:${PORT}/api\n`);
     });
-
   } catch (error) {
-    console.error(" Server start failed:", error.message);
+    console.error("❌ Failed to start server:", error.message);
     process.exit(1);
   }
 };
