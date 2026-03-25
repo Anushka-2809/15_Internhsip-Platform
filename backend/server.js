@@ -2,15 +2,15 @@ import dotenv from "dotenv";
 import express from "express";
 import cors from "cors";
 import "express-async-errors";
-import connectDB from "./config/database.js";
+import connectDB from "./config/Database.js";
 import errorHandler from "./middlewares/errorHandler.js";
 
 // Import routes
 import authRoutes from "./routes/AuthRoutes.js";
 import studentRoutes from "./routes/studentRoutes.js";
 import recruiterRoutes from "./routes/recruiterRoutes.js";
-import jobRoutes from "./routes/jobRoutes.js";
-import applicationRoutes from "./routes/applicationRoutes.js";
+import jobRoutes from "./routes/JobRoutes.js";
+import applicationRoutes from "./routes/ApplicationRoutes.js";
 
 dotenv.config();
 
