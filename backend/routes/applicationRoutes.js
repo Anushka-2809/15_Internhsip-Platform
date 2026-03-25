@@ -21,4 +21,4 @@ router.get("/recruiter/:jobId", authMiddleware, recruiterRole, getRecruiterAppli
 // Update application status (recruiter)
 router.put("/status/:id", authMiddleware, recruiterRole, updateApplicationStatusController);
 
-export default router
+export default router;
