@@ -22,4 +22,3 @@ router.get("/recruiter/:jobId", authMiddleware, recruiterRole, getRecruiterAppli
 router.put("/status/:id", authMiddleware, recruiterRole, updateApplicationStatusController);
 
 export default router;
-nmnm
